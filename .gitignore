@@ -1,0 +1,3 @@
+.plan/
+.env*
+!.env.example
