@@ -1,4 +1,4 @@
-This [handbook]() is our full security documentation.
+This [handbook](<>) is our full security documentation.
 
 ## Compatible Versions
 
@@ -6,11 +6,13 @@ For the most recent versions, we presently offer security updates.
 Further details on this can be found [here](https://kiwu.vercel.app/docs/version-durability).
 
 ### Disclosing Vulnerabilities
+
 Please report any security flaws you find by following the guidelines below:
 
 Contact [/report](https://kiwu.vercel.app/report) with information regarding the vulnerability.
 
 Provide as much detail as you can:
+
 - Full description
 - The impacted version
 - How to replicate
