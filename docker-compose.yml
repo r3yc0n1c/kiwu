@@ -1,0 +1,113 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kiwu
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kiwu"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  typesense:
+    image: typesense/typesense:31.0.rc17
+    container_name: typesense
+    restart: unless-stopped
+    command:
+      - "--data-dir"
+      - "/data"
+      - "--api-key=typesense_dev_key"
+      - "--enable-cors"
+    ports:
+      - "8108:8108"
+    volumes:
+      - typesense-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8108/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: cgr.dev/chainguard/minio
+    container_name: minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  llama-server:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llama-server
+    restart: unless-stopped
+    command:
+      - "-m"
+      - "/models/Llama-3.2-3B-Instruct-UD-Q4_K_XL.gguf"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "-c"
+      - "4096"
+      - "-b"
+      - "512"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models/llama:/models:ro
+
+  whisper-server:
+    image: ghcr.io/ggml-org/whisper.cpp:main
+    container_name: whisper
+    restart: unless-stopped
+    command:
+      - "whisper-server"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "-m"
+      - "/models/ggml-base.bin"
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./models/whisper:/models:ro
+
+volumes:
+  postgres-data:
+  redis-data:
+  typesense-data:
+  minio-data:
