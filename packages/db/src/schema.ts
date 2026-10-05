@@ -62,7 +62,7 @@ export const items = pgTable("items", {
   boardX: real("board_x").default(0).notNull(),
   boardY: real("board_y").default(0).notNull(),
 
-  status: text("status").default("active").$type<"active" | "archived">(),
+  status: text("status").default("pending").$type<"pending" | "active" | "failed" | "archived">(),
 
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

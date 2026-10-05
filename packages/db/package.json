@@ -4,6 +4,9 @@
   "private": true,
   "license": "ISC",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "generate": "drizzle-kit generate",
     "generate:dev": "dotenv run -f ../../.env.development -- drizzle-kit generate",
@@ -20,7 +23,7 @@
     "drizzle-orm": "catalog:database",
     "drizzle-zod": "catalog:database",
     "postgres": "catalog:database",
-    "zod": "catalog:dev"
+    "zod": "catalog:validation"
   },
   "devDependencies": {
     "@types/node": "catalog:dev",

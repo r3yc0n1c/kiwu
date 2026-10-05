@@ -1,0 +1,24 @@
+{
+  "name": "@kiwu/ingestion-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env.development src/server.ts",
+    "start": "tsx --env-file=../../.env.production src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test --env-file=../../.env.development test/ingest.test.ts"
+  },
+  "dependencies": {
+    "@kiwu/config": "workspace:*",
+    "@kiwu/db": "workspace:*",
+    "fastify": "catalog:http",
+    "ioredis": "catalog:cache",
+    "zod": "catalog:validation"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:dev",
+    "tsx": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}

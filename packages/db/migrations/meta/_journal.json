@@ -15,6 +15,13 @@
       "when": 1791132407391,
       "tag": "0001_lyrical_spitfire",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791211933098,
+      "tag": "0002_gigantic_shinobi_shaw",
+      "breakpoints": true
     }
   ]
 }
