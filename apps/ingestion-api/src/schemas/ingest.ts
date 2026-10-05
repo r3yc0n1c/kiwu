@@ -9,6 +9,7 @@ export const ingestBodySchema = {
       default: "web",
     },
     raw_type: { type: "string", enum: ["text", "audio", "image"] },
+    idempotency_key: { type: "string", minLength: 1, maxLength: 255 },
     payload: { type: "string", minLength: 1 },
   },
   additionalProperties: false,
@@ -26,5 +27,6 @@ export type IngestBody = {
   user_id: string;
   source?: "web" | "ios" | "android" | "email" | "connector";
   raw_type: "text" | "audio" | "image";
+  idempotency_key?: string;
   payload: string;
 };

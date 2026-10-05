@@ -1,4 +1,14 @@
-import { pgTable, uuid, text, timestamp, real, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  real,
+  index,
+  integer,
+  boolean,
+  primaryKey,
+} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -67,6 +77,24 @@ export const items = pgTable("items", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+// --- Idempotency Keys ---
+export const idempotencyKeys = pgTable(
+  "idempotency_keys",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    key: text("key").notNull(),
+    requestHash: text("request_hash").notNull(),
+    itemId: uuid("item_id"),
+    statusCode: integer("status_code"),
+    completed: boolean("completed").default(false).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  // TODO: 24h TTL cleanup is a daily job to-do, keys are small; add when table grows
+  (t) => [primaryKey({ columns: [t.userId, t.key] })],
+);
 
 // --- Connector Accounts (Google Calendar, Gmail) ---
 export const connectorAccounts = pgTable("connector_accounts", {

@@ -26,7 +26,8 @@
     "db:generate:test": "pnpm --filter @kiwu/db generate:test",
     "db:push:dev": "pnpm --filter @kiwu/db push:dev",
     "db:push:prod": "pnpm --filter @kiwu/db push:prod",
-    "db:push:test": "pnpm --filter @kiwu/db push:test"
+    "db:push:test": "pnpm --filter @kiwu/db push:test",
+    "check": "pnpm lint:fix && pnpm format && pnpm typecheck"
   },
   "devDependencies": {
     "@types/node": "catalog:dev",
