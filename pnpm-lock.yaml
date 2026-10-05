@@ -213,6 +213,12 @@ importers:
         specifier: catalog:dev
         version: 7.0.2
 
+  packages/config:
+    dependencies:
+      zod:
+        specifier: catalog:dev
+        version: 4.6.5
+
   packages/db:
     dependencies:
       drizzle-orm:
