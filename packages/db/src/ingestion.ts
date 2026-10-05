@@ -54,3 +54,7 @@ export async function createIngestionItem(opts: {
 export function isUniqueViolation(e: unknown): boolean {
   return (e as { code?: string })?.code === "23505";
 }
+
+// Facade used by the API layer; tests inject an in-memory stub via build() opts.
+export const ingestionRepo = { getIdempotencyKey, createIngestionItem, isUniqueViolation };
+export type IngestionRepo = typeof ingestionRepo;

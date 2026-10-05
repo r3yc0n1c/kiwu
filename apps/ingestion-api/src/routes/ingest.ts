@@ -1,6 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
 import { createHash } from "node:crypto";
-import { createIngestionItem, getIdempotencyKey, isUniqueViolation } from "@kiwu/db";
 import { ingestBodySchema, ingestAcceptedSchema, type IngestBody } from "../schemas/ingest";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
@@ -26,7 +25,7 @@ const ingestRoutes: FastifyPluginAsync = async (app) => {
       const requestHash = sha256(JSON.stringify(req.body));
 
       if (key) {
-        const existing = await getIdempotencyKey(user_id, key);
+        const existing = await app.repo.getIdempotencyKey(user_id, key);
         if (existing) {
           if (existing.requestHash !== requestHash) {
             return reply.code(422).send({ error: "idempotency_key_reused_with_different_body" });
@@ -40,7 +39,7 @@ const ingestRoutes: FastifyPluginAsync = async (app) => {
 
       let item;
       try {
-        item = await createIngestionItem({
+        item = await app.repo.createIngestionItem({
           userId: user_id,
           source,
           rawType: raw_type,
@@ -49,8 +48,8 @@ const ingestRoutes: FastifyPluginAsync = async (app) => {
           requestHash,
         });
       } catch (e) {
-        if (key && isUniqueViolation(e)) {
-          const existing = await getIdempotencyKey(user_id, key);
+        if (key && app.repo.isUniqueViolation(e)) {
+          const existing = await app.repo.getIdempotencyKey(user_id, key);
           if (existing?.completed) {
             return reply.code(200).send({ id: existing.itemId, status: "duplicate" });
           }
