@@ -30,6 +30,8 @@
   },
   "devDependencies": {
     "@types/node": "catalog:dev",
+    "fastify": "catalog:http",
+    "ioredis": "catalog:cache",
     "oxfmt": "catalog:dev",
     "oxlint": "catalog:dev",
     "typescript": "catalog:dev"

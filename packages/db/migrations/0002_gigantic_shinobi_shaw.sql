@@ -1,0 +1,1 @@
+ALTER TABLE "items" ALTER COLUMN "status" SET DEFAULT 'pending';
