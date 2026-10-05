@@ -1,0 +1,11 @@
+{
+  "name": "@kiwu/config",
+  "version": "1.0.0",
+  "private": true,
+  "license": "ISC",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "zod": "catalog:dev"
+  }
+}
