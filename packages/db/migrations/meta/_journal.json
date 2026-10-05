@@ -22,6 +22,13 @@
       "when": 1791211933098,
       "tag": "0002_gigantic_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791234886958,
+      "tag": "0003_famous_maggott",
+      "breakpoints": true
     }
   ]
 }
