@@ -16,17 +16,20 @@ jobs:
         uses: pnpm/setup@v1
         with:
           version: 12.6.0
-          runtime: node@24 
+          runtime: node@24
           cache: true
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Lint formatting
-        run: pnpm run lint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: pnpm typecheck
 
       - name: Run Tests
         run: pnpm test

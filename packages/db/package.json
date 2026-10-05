@@ -1,0 +1,31 @@
+{
+  "name": "@kiwu/db",
+  "version": "1.0.0",
+  "private": true,
+  "license": "ISC",
+  "type": "module",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "generate:dev": "dotenv run -f ../../.env.development -- drizzle-kit generate",
+    "generate:prod": "dotenv run -f ../../.env.production -- drizzle-kit generate",
+    "generate:test": "dotenv run -f ../../.env.test -- drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "push:dev": "dotenv run -f ../../.env.development -- drizzle-kit push",
+    "push:prod": "dotenv run -f ../../.env.production -- drizzle-kit push",
+    "push:test": "dotenv run -f ../../.env.test -- drizzle-kit push",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:database",
+    "drizzle-zod": "catalog:database",
+    "postgres": "catalog:database",
+    "zod": "catalog:dev"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:dev",
+    "dotenv": "catalog:dev",
+    "drizzle-kit": "catalog:database",
+    "typescript": "catalog:dev"
+  }
+}
