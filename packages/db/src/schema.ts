@@ -1,3 +1,9 @@
+/* Notes:
+
+TODO: UUID v7 for ids as PK
+- https://github.com/drizzle-team/drizzle-orm/pull/5722/changes
+*/
+
 import {
   pgTable,
   uuid,
