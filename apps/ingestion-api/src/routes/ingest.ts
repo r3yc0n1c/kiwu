@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { createHash } from "node:crypto";
 import { ingestBodySchema, ingestAcceptedSchema, type IngestBody } from "../schemas/ingest";
+import { REDIS_STREAM } from "@kiwu/config";
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
@@ -58,7 +59,7 @@ const ingestRoutes: FastifyPluginAsync = async (app) => {
         throw e;
       }
 
-      await app.redis.xadd("ingest:jobs", "*", "item_id", item.id, "raw_type", raw_type);
+      await app.redis.xadd(REDIS_STREAM, "*", "item_id", item.id, "raw_type", raw_type);
       return reply.code(202).send({ id: item.id, status: "accepted" });
     },
   );

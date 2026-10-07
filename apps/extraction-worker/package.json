@@ -1,0 +1,21 @@
+{
+  "name": "@kiwu/extraction-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "provision": "tsx --env-file-if-exists=../../.env.development src/provision.ts",
+    "typecheck": "tsc --noEmit",
+    "worker": "tsx --env-file-if-exists=../../.env.development src/worker.ts",
+    "worker:all": "tsx --env-file-if-exists=../../.env.development src/worker.ts"
+  },
+  "dependencies": {
+    "@kiwu/config": "workspace:*",
+    "ioredis": "catalog:cache"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:dev",
+    "tsx": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}
