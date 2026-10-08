@@ -61,8 +61,11 @@ export const items = pgTable("items", {
   }),
 
   source: text("source").notNull(), // 'web' | 'ios' | 'android' | 'email' | 'connector'
-  rawType: text("raw_type").notNull(), // 'text' | 'image' | 'audio' | 'connector_event'
+  rawType: text("raw_type").notNull(), // 'text' | 'image' | 'audio' | 'mixed' | 'connector_event'
+  // Deprecated mirror of item_attachments[0].object_key; no longer written — drop in cleanup ticket
   rawContentUrl: text("raw_content_url"),
+  // user-typed text (caption / text note); transcript_or_ocr is derived text only
+  userNote: text("user_note"),
   transcriptOrOcr: text("transcript_or_ocr"),
 
   title: text("title"),
@@ -82,6 +85,25 @@ export const items = pgTable("items", {
 
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// --- Item Attachments (one capture can hold many files) ---
+export const itemAttachments = pgTable("item_attachments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  itemId: uuid("item_id")
+    .notNull()
+    .references(() => items.id, { onDelete: "cascade" }),
+  // storage key (not URL); presigned GET at read time
+  objectKey: text("object_key").notNull().unique(),
+  rawType: text("raw_type").notNull(), // derived from mime_type server-side: 'image' | 'audio'
+  mimeType: text("mime_type").notNull(),
+  sizeBytes: integer("size_bytes"),
+  // user's image order within one capture
+  position: integer("position").notNull().default(0),
+  // per-file OCR/description/transcript (worker, KIWU-17)
+  derivedText: text("derived_text"),
+  status: text("status").default("pending").$type<"pending" | "done" | "failed">().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 // --- Idempotency Keys ---

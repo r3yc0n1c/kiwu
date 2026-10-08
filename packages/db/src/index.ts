@@ -6,6 +6,7 @@ export {
   getIdempotencyKey,
   createIngestionItem,
   isUniqueViolation,
+  isObjectKeyViolation,
   ingestionRepo,
   type IngestionRepo,
 } from "./ingestion";
