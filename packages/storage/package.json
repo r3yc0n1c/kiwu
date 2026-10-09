@@ -1,0 +1,20 @@
+{
+  "name": "@kiwu/storage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kiwu/config": "workspace:*",
+    "minio": "catalog:storage"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}

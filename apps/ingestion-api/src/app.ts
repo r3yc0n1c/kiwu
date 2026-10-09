@@ -2,9 +2,13 @@ import Fastify, { type FastifyInstance } from "fastify";
 import Redis from "ioredis";
 import { ingestionAPIenv as env } from "@kiwu/config";
 import { ingestionRepo, type IngestionRepo } from "@kiwu/db";
+import { storageRepo, type StorageRepo } from "@kiwu/storage";
 import ingestRoutes from "./routes/ingest";
+import uploadsRoutes from "./routes/uploads";
 
-export function build(opts: { logger?: boolean; repo?: IngestionRepo } = {}): FastifyInstance {
+export function build(
+  opts: { logger?: boolean; repo?: IngestionRepo; storage?: StorageRepo } = {},
+): FastifyInstance {
   const app = Fastify({ logger: opts.logger ?? true });
 
   const redis = new Redis(env.REDIS_URL, {
@@ -16,6 +20,7 @@ export function build(opts: { logger?: boolean; repo?: IngestionRepo } = {}): Fa
   app.addHook("onClose", async () => redis.disconnect());
 
   app.decorate("repo", opts.repo ?? ingestionRepo);
+  app.decorate("storage", opts.storage ?? storageRepo);
 
   app.setErrorHandler((err: any, _req, reply) => {
     app.log.error(err);
@@ -26,6 +31,7 @@ export function build(opts: { logger?: boolean; repo?: IngestionRepo } = {}): Fa
   app.get("/health", async () => ({ status: "ok" }));
 
   app.register(ingestRoutes);
+  app.register(uploadsRoutes);
   return app;
 }
 
@@ -33,5 +39,6 @@ declare module "fastify" {
   interface FastifyInstance {
     redis: Redis;
     repo: IngestionRepo;
+    storage: StorageRepo;
   }
 }

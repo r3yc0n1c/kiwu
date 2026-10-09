@@ -1,7 +1,7 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { build } from "../src/app";
+import { requestHash } from "../src/capture";
 
 // In-memory repo stub mirroring the real functions' semantics (unique PK on userId+key => 23505).
 const rows = new Map<string, any>();
@@ -82,9 +82,7 @@ test("in-flight key returns 409", async () => {
     payload: "inflight",
     idempotency_key: "key-inflight",
   };
-  const hash = createHash("sha256")
-    .update(JSON.stringify({ ...body, source: "web" }))
-    .digest("hex");
+  const hash = requestHash({ ...body, source: "web" });
   rows.set(`${USER}:key-inflight`, {
     userId: USER,
     key: "key-inflight",

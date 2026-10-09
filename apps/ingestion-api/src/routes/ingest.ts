@@ -1,9 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
-import { createHash } from "node:crypto";
 import { ingestBodySchema, ingestAcceptedSchema, type IngestBody } from "../schemas/ingest";
-import { REDIS_STREAM } from "@kiwu/config";
-
-const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+import { captureItem, requestHash, resolveIdempotencyKey } from "../capture";
 
 const ingestRoutes: FastifyPluginAsync = async (app) => {
   app.post<{ Body: IngestBody }>(
@@ -15,52 +12,29 @@ const ingestRoutes: FastifyPluginAsync = async (app) => {
       },
     },
     async (req, reply) => {
-      const { user_id, source = "web", raw_type, payload } = req.body;
-      const headerKey = req.headers["idempotency-key"];
-      const messageId = req.headers["message-id"];
-      const key =
-        req.body.idempotency_key ??
-        (typeof headerKey === "string" ? headerKey : undefined) ??
-        (source === "email" && typeof messageId === "string" ? messageId : undefined);
-
-      const requestHash = sha256(JSON.stringify(req.body));
-
-      if (key) {
-        const existing = await app.repo.getIdempotencyKey(user_id, key);
-        if (existing) {
-          if (existing.requestHash !== requestHash) {
-            return reply.code(422).send({ error: "idempotency_key_reused_with_different_body" });
-          }
-          if (!existing.completed) {
-            return reply.code(409).send({ error: "idempotent_request_in_flight" });
-          }
-          return reply.code(200).send({ id: existing.itemId, status: "duplicate" });
-        }
+      const { user_id, source = "web", raw_type, payload, user_note, attachments } = req.body;
+      if (!payload && !attachments?.length) {
+        return reply.code(400).send({ error: "payload_or_attachments_required" });
       }
 
-      let item;
-      try {
-        item = await app.repo.createIngestionItem({
-          userId: user_id,
-          source,
-          rawType: raw_type,
-          payload,
-          key,
-          requestHash,
-        });
-      } catch (e) {
-        if (key && app.repo.isUniqueViolation(e)) {
-          const existing = await app.repo.getIdempotencyKey(user_id, key);
-          if (existing?.completed) {
-            return reply.code(200).send({ id: existing.itemId, status: "duplicate" });
-          }
-          return reply.code(409).send({ error: "idempotent_request_in_flight" });
-        }
-        throw e;
-      }
+      const key = resolveIdempotencyKey({ headers: req.headers, body: req.body, source });
 
-      await app.redis.xadd(REDIS_STREAM, "*", "item_id", item.id, "raw_type", raw_type);
-      return reply.code(202).send({ id: item.id, status: "accepted" });
+      const result = await captureItem(app, {
+        userId: user_id,
+        source,
+        rawType: raw_type,
+        payload,
+        userNote: user_note,
+        attachments,
+        key,
+        hash: requestHash(req.body),
+      });
+
+      if (result.code !== 202) {
+        if (result.error) return reply.code(result.code).send({ error: result.error });
+        return reply.code(result.code).send({ id: result.id, status: result.status });
+      }
+      return reply.code(202).send({ id: result.id, status: "accepted" });
     },
   );
 };

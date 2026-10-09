@@ -12,6 +12,7 @@
   "dependencies": {
     "@kiwu/config": "workspace:*",
     "@kiwu/db": "workspace:*",
+    "@kiwu/storage": "workspace:*",
     "fastify": "catalog:http",
     "ioredis": "catalog:cache",
     "zod": "catalog:validation"
